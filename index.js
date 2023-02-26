@@ -8,6 +8,10 @@ app.use(bodyParser.json());
 const dotenv = require("dotenv");
 dotenv.config();
 const authRoute = require("./routes/auth");
+const bcrypt = require("bcryptjs");
+const Product = require("./model/Product");
+const Password = require("./model/Password");
+
 // app.use(function (req, res) {
 //   res.setHeader("Content-Type", "text/plain");
 //   res.write("you posted:\n");
@@ -32,14 +36,55 @@ const productWithID = product.map((eachProduct, index) => ({
   ...eachProduct,
   id: index,
 }));
-console.log(productWithID);
 
 app.use("/api/auth", authRoute);
 
 // respond ok to post api
-app.post("/product", (req, res) => {
-  console.log(req.body);
-  res.json({ message: "ok" });
+app.post("/product", async (req, res) => {
+  try {
+    // create new product
+    const newProduct = new Product({
+      name: req.body.name,
+      price: req.body.price,
+      stock: req.body.stock,
+    });
+    // save product to database
+    const savedProduct = await newProduct.save();
+    // return new user
+    return res.json(savedProduct);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message);
+  }
+});
+
+app.post("/password", async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 12);
+    const newPassword = new Password({
+      password: hashedPassword,
+    });
+    const savedPassword = await newPassword.save();
+    return res.json(savedPassword);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message);
+  }
+});
+
+app.get("/product", async (req, res) => {
+  try {
+    const product = await Product.find({});
+    const productsWithoutIdAndV = product.map((product, index) => {
+      const { name, price, stock } = product;
+      return { name, price, stock, id: index + productWithID.length };
+    });
+    const allProduct = [...productWithID, ...productsWithoutIdAndV];
+    return res.json(allProduct);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message);
+  }
 });
 
 app.put("/product/:id", (req, res) => {

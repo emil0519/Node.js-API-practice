@@ -14,8 +14,8 @@ const ProductSchema = new Schema(
       type: String,
       required: true,
     },
-  },
-  { timestamp: true }
+  }
+  //   { timestamps: true }
 );
 
 // export model
