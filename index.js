@@ -57,7 +57,7 @@ app.delete("/product/:id", (req, res) => {
     message: `Product ${productWithID[deleteIndex].name} is deleted`,
   });
 });
-
+//test
 // send content when parameter matches "/"
 app.get("/api", (req, res) => {
   res.json(product);
