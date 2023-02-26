@@ -35,9 +35,16 @@ app.put("/product/:id", (req, res) => {
 });
 
 app.delete("/product/:id", (req, res) => {
-  // product.findIndex(p=>p.id===)
-  console.log(req.params.id);
-  res.json({ message: `Product ` });
+  const deleteIndex = productWithID.findIndex(
+    (p) => p.id === parseInt(req.params.id)
+  );
+  productWithID.splice(deleteIndex, 1);
+  res.json({
+    message: `Product ${productWithID[deleteIndex].name} is deleted`,
+  });
+  // res.json({
+  //   message: `ok`,
+  // });
 });
 
 // send content when parameter matches "/"
