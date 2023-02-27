@@ -95,7 +95,11 @@ app.get("/product", async (req, res) => {
     //   return { name, price, stock, id: index + productWithID.length };
     // });
     // const allProduct = [...productWithID, ...productsWithoutIdAndV];
-    return res.json(product);
+    const showProduct = product.map((eachProduct, index) => {
+      const { name, price, stock } = product;
+      return { name, price, stock, id: index + productWithID.length };
+    });
+    return res.json(showProduct);
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message);
