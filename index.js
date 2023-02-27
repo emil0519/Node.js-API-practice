@@ -37,6 +37,21 @@ const productWithID = product.map((eachProduct, index) => ({
   id: index,
 }));
 
+// inserted default product
+(async () => {
+  try {
+    const count = await Product.countDocuments({});
+    if (count === 0) {
+      await Product.insertMany(productWithID);
+      console.log("Default products inserted into database");
+    } else {
+      console.log("Default products already exist in database");
+    }
+  } catch (err) {
+    console.error(err);
+  }
+})();
+
 app.use("/api/auth", authRoute);
 
 // respond ok to post api
@@ -75,12 +90,12 @@ app.post("/password", async (req, res) => {
 app.get("/product", async (req, res) => {
   try {
     const product = await Product.find({});
-    const productsWithoutIdAndV = product.map((product, index) => {
-      const { name, price, stock } = product;
-      return { name, price, stock, id: index + productWithID.length };
-    });
-    const allProduct = [...productWithID, ...productsWithoutIdAndV];
-    return res.json(allProduct);
+    // const productsWithoutIdAndV = product.map((product, index) => {
+    //   const { name, price, stock } = product;
+    //   return { name, price, stock, id: index + productWithID.length };
+    // });
+    // const allProduct = [...productWithID, ...productsWithoutIdAndV];
+    return res.json(product);
   } catch (err) {
     console.log(err);
     res.status(500).send(err.message);
@@ -99,9 +114,22 @@ app.delete("/product/:id", (req, res) => {
   );
   productWithID.splice(deleteIndex, 1);
   res.json({
-    message: `Product ${productWithID[deleteIndex].name} is deleted`,
+    message: "Deleted",
+    // message: `Product ${productWithID[deleteIndex].name} is deleted`,
   });
 });
+
+app.delete("/allProduct", async (req, res) => {
+  try {
+    await Product.deleteMany({});
+    console.log("All products deleted from database");
+    return res.status(200).send("All products deleted");
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send("Error deleting products");
+  }
+});
+
 //test
 // send content when parameter matches "/"
 app.get("/api", (req, res) => {
