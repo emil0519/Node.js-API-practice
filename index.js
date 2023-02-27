@@ -96,7 +96,7 @@ app.get("/product", async (req, res) => {
     // });
     // const allProduct = [...productWithID, ...productsWithoutIdAndV];
     const showProduct = product.map((eachProduct, index) => {
-      const { name, price, stock } = product;
+      const { name, price, stock } = eachProduct;
       return { name, price, stock, id: index + productWithID.length };
     });
     return res.json(showProduct);
